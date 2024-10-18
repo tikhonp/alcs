@@ -1,0 +1,41 @@
+services:
+  server:
+    container_name: alcs-server
+    image: alcs-server-image
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - localnet
+
+  db:
+    container_name: alcs-db
+    image: postgres
+    restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=dummy
+      - POSTGRES_DB=alcs-db
+      - POSTGRES_PASSWORD=blablabla
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "dummy", "-d", "alcs-db" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+    networks:
+      - localnet
+    hostname: db
+
+volumes:
+  db-data:
+
+networks:
+  localnet:
+    driver: bridge
+

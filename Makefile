@@ -7,13 +7,13 @@ deploy:
 	docker compose -f compose.prod.yaml up --build -d
 
 status:
-	@goose postgres "$(shell /bin/get_db_string)" -dir=migrations status
+	@goose postgres "$(shell /bin/get_db_string)" -dir=db/migrations status
 
 up:
-	@goose postgres "$(shell /bin/get_db_string)" -dir=migrations up
+	@goose postgres "$(shell /bin/get_db_string)" -dir=db/migrations up
 
 reset:
-	@goose postgres "$(shell /bin/get_db_string)" -dir=migrations reset
+	@goose postgres "$(shell /bin/get_db_string)" -dir=db/migrations reset
 
 templ:
 	@templ generate

@@ -8,18 +8,17 @@ import (
 	"github.com/tikhonp/alcs/config"
 )
 
-// db is a global database.
-//
-// Yes, im dumb and i use global varibles for db.
-// It's my second project in go, i think you can forgive me.
-var db *sqlx.DB
-
+// DataSourceName returns a data source name for the given configuration.
 func DataSourceName(cfg *config.Database) string {
 	return fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", cfg.User, cfg.Dbname, cfg.Password, cfg.Host)
 }
 
-// MustConnect creates a new in-memory SQLite database and initializes it with the schema.
-func MustConnect(cfg *config.Database) {
-	db = sqlx.MustConnect("postgres", DataSourceName(cfg))
+// Connect to the database and return a connection.
+func Connect(cfg *config.Database) (ModelsFactory, error) {
+	db, err := sqlx.Connect("postgres", DataSourceName(cfg))
+    if err != nil {
+        return nil, err
+    }
+    return newModelsFactory(db), nil
 }
 
