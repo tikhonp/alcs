@@ -1,7 +1,6 @@
 # syntax=docker/dockerfile:1
 
 ARG GO_VERSION=1.23.2
-
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 
 WORKDIR /src
@@ -23,7 +22,7 @@ ARG TARGETARCH
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
-    CGO_ENABLED=0 GOARCH=$TARGETARCH go build -o /bin/get_db_string ./cmd/get_db_string/
+    CGO_ENABLED=0 GOARCH=$TARGETARCH go build -o /bin/manage ./cmd/manage/
 
 RUN --mount=type=cache,target=/go/pkg/mod/ \
     --mount=type=bind,target=. \
