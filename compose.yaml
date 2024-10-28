@@ -10,6 +10,8 @@ services:
         condition: service_healthy
     networks:
       - localnet
+    ports:
+      - 9999:9990
 
   db:
     container_name: alcs-db
@@ -23,6 +25,7 @@ services:
       - POSTGRES_PASSWORD=blablabla
     ports:
       - 5432:5432
+      - 9990:9990
     healthcheck:
       test: [ "CMD", "pg_isready", "-q", "-U", "dummy", "-d", "alcs-db" ]
       interval: 1s
