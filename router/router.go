@@ -8,6 +8,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/tikhonp/alcs/config"
+	authutil "github.com/tikhonp/alcs/util/auth"
+    "github.com/tikhonp/alcs/apps/auth"
 )
 
 func New(cfg *config.Config) *echo.Echo {
@@ -39,6 +41,8 @@ func New(cfg *config.Config) *echo.Echo {
 		},
 	))
 
+    e.Use(authutil.AuthMiddleware())
+
 	return e
 }
 
@@ -47,7 +51,8 @@ func RegisterRoutes(e *echo.Echo) {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Купил мужик шляпу, а она ему как раз!")
 	})
-
+    
+    auth.ConfigureAuthGroup(e.Group("/auth"))
 }
 
 func Start(e *echo.Echo, cfg *config.Config) error {

@@ -6,13 +6,13 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
 	"github.com/tikhonp/alcs/db/models/auth"
-	"github.com/tikhonp/alcs/middleware"
+	"github.com/tikhonp/alcs/util"
 )
 
 func AuthMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			userId, err := middleware.GetValue("userId", c)
+			userId, err := util.GetValue("userId", c)
 			if err != nil {
 				log.Infof("Error getting userId from session %s", err.Error())
 				return next(c)
