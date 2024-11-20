@@ -20,7 +20,7 @@ func main() {
 	}
 
 	// Connect to the database
-	_, err = db.Connect(cfg.Db)
+    modelsFactory, err := db.Connect(cfg.Db)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
@@ -28,8 +28,7 @@ func main() {
 
 	// Start the server
 	r := router.New(cfg)
-	router.RegisterRoutes(r)
+	router.RegisterRoutes(r, cfg, modelsFactory)
 	r.Logger.Fatal(router.Start(r, cfg))
 
 }
-

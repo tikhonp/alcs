@@ -12,8 +12,13 @@ type Config struct {
 
 	Db *Database `pkl:"db"`
 
+	Auth *Auth `pkl:"auth"`
+
 	// Text file must contain release version or commit hash.
 	ReleaseFilePath string `pkl:"releaseFilePath"`
+
+	// Base host like example.com
+	BaseHost string `pkl:"baseHost"`
 }
 
 // LoadFromPath loads the pkl module at the given path and evaluates it into a Config

@@ -7,4 +7,5 @@ func init() {
 	pkl.RegisterMapping("config", Config{})
 	pkl.RegisterMapping("config#Server", Server{})
 	pkl.RegisterMapping("config#Database", Database{})
+	pkl.RegisterMapping("config#Auth", Auth{})
 }

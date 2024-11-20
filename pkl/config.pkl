@@ -5,27 +5,40 @@ import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/go.pkl"
 
 class Server {
 
-  /// The hostname of this application.
-  host: String
+    /// The hostname of this application.
+    host: String
 
-  /// The port to listen on.
-  port: UInt16
+    /// The port to listen on.
+    port: UInt16
 
-  /// Sets server to debug mode.
-  debug: Boolean
+    /// Sets server to debug mode.
+    debug: Boolean
+
+    /// Secret string for cryptography
+    secret: String
 
 }
 
 /// Postgres database configuration.
 class Database {
-  user: String
-  password: String
-  dbname: String
-  host: String
+    user: String
+    password: String
+    dbname: String
+    host: String
+}
+
+// OAuth credentials secrets
+class Auth {
+    googleKey: String
+    googleSecret: String
 }
 
 server: Server
 db: Database
+auth: Auth
 
 /// Text file must contain release version or commit hash.
 releaseFilePath: String
+
+/// Base host like example.com
+baseHost: String

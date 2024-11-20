@@ -10,4 +10,7 @@ type Server struct {
 
 	// Sets server to debug mode.
 	Debug bool `pkl:"debug"`
+
+	// Secret string for cryptography
+	Secret string `pkl:"secret"`
 }

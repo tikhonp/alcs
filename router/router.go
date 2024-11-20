@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/sessions"
+	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
+	"github.com/markbates/goth/gothic"
+	"github.com/tikhonp/alcs/apps/auth"
 	"github.com/tikhonp/alcs/config"
+	"github.com/tikhonp/alcs/db"
 	authutil "github.com/tikhonp/alcs/util/auth"
-    "github.com/tikhonp/alcs/apps/auth"
 )
 
 func New(cfg *config.Config) *echo.Echo {
@@ -41,22 +45,25 @@ func New(cfg *config.Config) *echo.Echo {
 		},
 	))
 
-    e.Use(authutil.AuthMiddleware())
+    store := sessions.NewCookieStore([]byte(cfg.Server.Secret))
+    gothic.Store = store
+    e.Use(session.Middleware(store))
+
+	e.Use(authutil.AuthMiddleware())
 
 	return e
 }
 
-func RegisterRoutes(e *echo.Echo) {
+func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory) {
 
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Купил мужик шляпу, а она ему как раз!")
 	})
-    
-    auth.ConfigureAuthGroup(e.Group("/auth"))
+
+	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory)
 }
 
 func Start(e *echo.Echo, cfg *config.Config) error {
 	addr := fmt.Sprintf("%s:%d", cfg.Server.Host, cfg.Server.Port)
 	return e.Start(addr)
 }
-

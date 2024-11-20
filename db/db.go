@@ -7,7 +7,6 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/tikhonp/alcs/config"
 )
-
 // DataSourceName returns a data source name for the given configuration.
 func DataSourceName(cfg *config.Database) string {
 	return fmt.Sprintf("user=%s dbname=%s sslmode=disable password=%s host=%s", cfg.User, cfg.Dbname, cfg.Password, cfg.Host)

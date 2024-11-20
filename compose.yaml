@@ -12,6 +12,8 @@ services:
       - localnet
     ports:
       - 9999:9990
+    volumes:
+      - ./:/src
 
   db:
     container_name: alcs-db

@@ -1,6 +1,10 @@
 package auth
 
-import "time"
+import (
+	"time"
+
+	"github.com/markbates/goth"
+)
 
 type User struct {
 	Id          int       `db:"id"`
@@ -24,5 +28,26 @@ type Users interface {
 	// IsUserHasPermissions checks if user has specified permissions
 	IsUserHasPermissions(userId int, permissionCodenames ...string) (bool, error)
 
+	// FromOAuth finds user by goth user or creates new one
+	FromOAuth(guser *goth.User) (*User, error)
 }
 
+type users struct {
+
+}
+
+func NewUsers() Users {
+    return &users{}
+}
+
+func (u *users) GetById(id int) (*User, error) {
+    panic("Not implemented")
+}
+
+func (u *users) IsUserHasPermissions(userId int, permissionCodenames ...string) (bool, error) {
+    panic("Not implemented")
+}
+
+func (u *users) FromOAuth(guser *goth.User) (*User, error) {
+    panic("Not implemented")
+}
