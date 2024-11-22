@@ -2,7 +2,7 @@ package auth
 
 import (
 	"github.com/labstack/echo/v4"
-	"github.com/tikhonp/alcs/util"
+	"github.com/tikhonp/alcs/internal/util"
 )
 
 // Saves user id to the session

@@ -1,4 +1,4 @@
-@go.Package { name = "github.com/tikhonp/alcs/config" }
+@go.Package { name = "github.com/tikhonp/alcs/internal/config" }
 module config
 
 import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/go.pkl"

@@ -2,7 +2,7 @@ package db
 
 import (
 	"github.com/jmoiron/sqlx"
-	"github.com/tikhonp/alcs/db/models/auth"
+	"github.com/tikhonp/alcs/internal/db/models/auth"
 )
 
 type ModelsFactory interface {
@@ -12,13 +12,13 @@ type ModelsFactory interface {
 }
 
 type modelsFactory struct {
-    users auth.Users
+	users auth.Users
 }
 
 func newModelsFactory(db *sqlx.DB) ModelsFactory {
 	return &modelsFactory{
-        users: auth.NewUsers(),
-    }
+		users: auth.NewUsers(),
+	}
 }
 
 func (f *modelsFactory) AuthGroups() auth.Groups {
@@ -30,5 +30,5 @@ func (f *modelsFactory) AuthPermissions() auth.Permissions {
 }
 
 func (f *modelsFactory) AuthUsers() auth.Users {
-    return f.users
+	return f.users
 }

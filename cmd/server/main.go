@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/tikhonp/alcs/config"
-	"github.com/tikhonp/alcs/db"
-	"github.com/tikhonp/alcs/router"
+	"github.com/tikhonp/alcs/internal/config"
+	"github.com/tikhonp/alcs/internal/db"
+	"github.com/tikhonp/alcs/internal/router"
 )
 
 func main() {
@@ -20,7 +20,7 @@ func main() {
 	}
 
 	// Connect to the database
-    modelsFactory, err := db.Connect(cfg.Db)
+	modelsFactory, err := db.Connect(cfg.Db)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)

@@ -10,10 +10,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/markbates/goth/gothic"
-	"github.com/tikhonp/alcs/apps/auth"
-	"github.com/tikhonp/alcs/config"
-	"github.com/tikhonp/alcs/db"
-	authutil "github.com/tikhonp/alcs/util/auth"
+	"github.com/tikhonp/alcs/internal/apps/auth"
+	"github.com/tikhonp/alcs/internal/config"
+	"github.com/tikhonp/alcs/internal/db"
+	authutil "github.com/tikhonp/alcs/internal/util/auth"
 )
 
 func New(cfg *config.Config) *echo.Echo {
@@ -45,9 +45,9 @@ func New(cfg *config.Config) *echo.Echo {
 		},
 	))
 
-    store := sessions.NewCookieStore([]byte(cfg.Server.Secret))
-    gothic.Store = store
-    e.Use(session.Middleware(store))
+	store := sessions.NewCookieStore([]byte(cfg.Server.Secret))
+	gothic.Store = store
+	e.Use(session.Middleware(store))
 
 	e.Use(authutil.AuthMiddleware())
 

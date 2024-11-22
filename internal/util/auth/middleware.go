@@ -5,8 +5,8 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/gommon/log"
-	"github.com/tikhonp/alcs/db/models/auth"
-	"github.com/tikhonp/alcs/util"
+	"github.com/tikhonp/alcs/internal/db/models/auth"
+	"github.com/tikhonp/alcs/internal/util"
 )
 
 func AuthMiddleware() echo.MiddlewareFunc {
@@ -44,4 +44,3 @@ func PermissionMiddleware(users auth.Users, permissionCodenames ...string) echo.
 		}
 	}
 }
-

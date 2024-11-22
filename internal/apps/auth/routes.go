@@ -10,10 +10,10 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
-	"github.com/tikhonp/alcs/apps/auth/handlers"
-	"github.com/tikhonp/alcs/config"
-	"github.com/tikhonp/alcs/db"
-	"github.com/tikhonp/alcs/util/auth"
+	"github.com/tikhonp/alcs/internal/apps/auth/handlers"
+	"github.com/tikhonp/alcs/internal/config"
+	"github.com/tikhonp/alcs/internal/db"
+	"github.com/tikhonp/alcs/internal/util/auth"
 )
 
 func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.ModelsFactory) {
@@ -33,12 +33,12 @@ func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.Mode
 			return err
 		}
 
-        user, err := modelsFactory.AuthUsers().FromOAuth(&guser)
-        if err != nil {
-            return err
-        }
+		user, err := modelsFactory.AuthUsers().FromOAuth(&guser)
+		if err != nil {
+			return err
+		}
 
-        auth.Login(c, user.Id)
+		auth.Login(c, user.Id)
 
 		t, _ := template.New("foo").Parse(userTemplate)
 		return t.Execute(c.Response(), guser)
