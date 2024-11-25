@@ -2,7 +2,6 @@ package router
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -11,6 +10,7 @@ import (
 	"github.com/labstack/gommon/log"
 	"github.com/markbates/goth/gothic"
 	"github.com/tikhonp/alcs/internal/apps/auth"
+	mainpage "github.com/tikhonp/alcs/internal/apps/main_page"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
 	authutil "github.com/tikhonp/alcs/internal/util/auth"
@@ -55,11 +55,7 @@ func New(cfg *config.Config) *echo.Echo {
 }
 
 func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory) {
-
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Купил мужик шляпу, а она ему как раз!")
-	})
-
+	mainpage.ConfigureMainPageGroup(e.Group(""), cfg, modelsFactory)
 	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory)
 }
 

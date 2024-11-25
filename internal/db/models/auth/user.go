@@ -37,10 +37,10 @@ type Users interface {
 }
 
 type users struct {
-	db sqlx.DB
+	db *sqlx.DB
 }
 
-func NewUsers(db sqlx.DB) Users {
+func NewUsers(db *sqlx.DB) Users {
 	return &users{db: db}
 }
 
@@ -53,20 +53,25 @@ func (u *users) IsUserHasPermissions(userId int, permissionCodenames ...string) 
 }
 
 func (u *users) FromOAuth(guser *goth.User) (*User, error) {
-
 	var user User
-	err := u.db.Get(&user, `SELECT (id, password, last_login, is_superuser, email, phone_number, first_name, last_name, is_active, date_joined, oauth_id) FROM users WHERE oauth_id = $1 LIMIT 1`, guser.UserID)
+	err := u.db.Get(
+		&user,
+		`SELECT * FROM auth_user WHERE oauth_id = $1 LIMIT 1`,
+		guser.UserID)
+
 	if errors.Is(err, sql.ErrNoRows) {
-
-        // Create new user
-        _, err = u.db.Exec(`INSERT INTO users (oauth_id, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, $5)`, guser.UserID, guser.Email, guser.FirstName, guser.LastName, time.Now())
-        if err != nil {
-            return nil, err
-        }
-
-        // Im WORKING HERE NOW
-
-
+		// Create new user
+		err = u.db.Get(
+            &user,
+			`INSERT INTO auth_user (oauth_id, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			guser.UserID,
+			guser.Email,
+			guser.FirstName,
+			guser.LastName,
+			time.Now(),
+		)
+        return &user, err
 	}
+
 	return &user, err
 }

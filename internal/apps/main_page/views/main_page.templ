@@ -1,0 +1,18 @@
+package views
+
+import genericviews "github.com/tikhonp/alcs/internal/generic_views"
+
+templ MainPage() {
+	@genericviews.Base("main") {
+		<section class="section">
+			<div class="container">
+				<h1 class="title">
+					Hello World
+				</h1>
+				<p class="subtitle">
+					Купил мужик шляпу, а она ему как раз.
+				</p>
+			</div>
+		</section>
+	}
+}

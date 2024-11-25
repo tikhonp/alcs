@@ -17,7 +17,7 @@ type modelsFactory struct {
 
 func newModelsFactory(db *sqlx.DB) ModelsFactory {
 	return &modelsFactory{
-		users: auth.NewUsers(),
+		users: auth.NewUsers(db),
 	}
 }
 
