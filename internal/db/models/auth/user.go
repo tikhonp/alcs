@@ -3,10 +3,12 @@ package auth
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/markbates/goth"
+	"github.com/tikhonp/alcs/internal/db/utils"
 )
 
 type User struct {
@@ -21,6 +23,18 @@ type User struct {
 	IsActive    bool           `db:"is_active"`
 	DateJoined  time.Time      `db:"date_joined"`
 	OAuthId     sql.NullString `db:"oauth_id"`
+}
+
+func (u *User) String() string {
+	firstName := "nil"
+	if u.FirstName.Valid {
+		firstName = u.FirstName.String
+	}
+	lastName := "nil"
+	if u.LastName.Valid {
+		lastName = u.LastName.String
+	}
+	return fmt.Sprintf("User{id: %v, email: %v, firstName: %v, lastName: %v}", u.Id, u.Email, firstName, lastName)
 }
 
 // User Actions
@@ -45,7 +59,9 @@ func NewUsers(db *sqlx.DB) Users {
 }
 
 func (u *users) GetById(id int) (*User, error) {
-	panic("Not implemented")
+	var user User
+	err := u.db.Get(&user, `SELECT * FROM auth_user WHERE id = $1`, id)
+	return &user, err
 }
 
 func (u *users) IsUserHasPermissions(userId int, permissionCodenames ...string) (bool, error) {
@@ -62,15 +78,15 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 	if errors.Is(err, sql.ErrNoRows) {
 		// Create new user
 		err = u.db.Get(
-            &user,
+			&user,
 			`INSERT INTO auth_user (oauth_id, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
 			guser.UserID,
 			guser.Email,
-			guser.FirstName,
-			guser.LastName,
+			utils.NewNullString(guser.FirstName),
+            utils.NewNullString(guser.LastName),
 			time.Now(),
 		)
-        return &user, err
+		return &user, err
 	}
 
 	return &user, err

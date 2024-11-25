@@ -1,17 +1,29 @@
 package views
 
-import genericviews "github.com/tikhonp/alcs/internal/generic_views"
+import (
+	"github.com/tikhonp/alcs/internal/db/models/auth"
+	genericviews "github.com/tikhonp/alcs/internal/generic_views"
+)
 
-templ MainPage() {
-	@genericviews.Base("main") {
+templ MainPage(isAuthed bool, user *auth.User) {
+	@genericviews.Base("СКУД ПОСТОВОЙ") {
 		<section class="section">
 			<div class="container">
 				<h1 class="title">
-					Hello World
-				</h1>
-				<p class="subtitle">
 					Купил мужик шляпу, а она ему как раз.
-				</p>
+				</h1>
+				if isAuthed {
+					<p class="subtitle">
+						{ user.String() }
+					</p>
+					<p class="subtitle">
+						<a href="/auth/logout">logout</a>
+					</p>
+				} else {
+					<p class="subtitle">
+						<a href="/auth/login">login</a>
+					</p>
+				}
 			</div>
 		</section>
 	}

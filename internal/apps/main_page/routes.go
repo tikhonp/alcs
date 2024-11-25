@@ -8,7 +8,7 @@ import (
 )
 
 func ConfigureMainPageGroup(g *echo.Group, cfg *config.Config, modelsFactory db.ModelsFactory) {
-    mpg := handlers.MainPageHandler{}
+	mpg := handlers.MainPageHandler{Db: modelsFactory}
 
-    g.GET("/", mpg.MainPage)
+	g.GET("/", mpg.MainPage)
 }

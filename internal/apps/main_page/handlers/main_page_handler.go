@@ -1,3 +1,7 @@
 package handlers
 
-type MainPageHandler struct{}
+import "github.com/tikhonp/alcs/internal/db"
+
+type MainPageHandler struct{
+    Db db.ModelsFactory
+}

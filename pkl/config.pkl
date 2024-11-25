@@ -40,5 +40,5 @@ auth: Auth
 /// Text file must contain release version or commit hash.
 releaseFilePath: String
 
-/// Base host like example.com
+/// Base host like http://example.com
 baseHost: String
