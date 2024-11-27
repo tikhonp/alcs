@@ -45,7 +45,8 @@ func (ah *AuthHandler) OAuthProvider(c echo.Context) error {
 	if guser, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx)); err == nil {
 		user, err := ah.Db.AuthUsers().FromOAuth(&guser)
 		if err != nil {
-			return err
+			ah.Annalist.Error(err, "OAUTH callback")
+			return echo.NewHTTPError(http.StatusBadRequest)
 		}
 		auth.Login(c, user.Id)
 		return c.Redirect(http.StatusMovedPermanently, "/")

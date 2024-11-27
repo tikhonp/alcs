@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/mail"
 	"os"
+	"strings"
 	"syscall"
 
 	"golang.org/x/term"
@@ -50,7 +51,7 @@ type manageConfig struct {
 func ParseFlags() *manageConfig {
 	cfg := &manageConfig{}
 
-	const commandUsage = "command to run. Available commands: print-db-string, create-super-user"
+	const commandUsage = "command to run. Available commands: print-db-string, create-super-admin"
 	flag.Var(&cfg.command, "command", commandUsage)
 	flag.Var(&cfg.command, "c", commandUsage+" (shorthand)")
 
@@ -89,23 +90,29 @@ func createSuperAdmin(users auth.Users) {
     
     fmt.Print("Password: ")
     bytepw, err := term.ReadPassword(int(syscall.Stdin))
-    fmt.Print("Repeat password: ")
+    if err != nil {
+        assert.NoError(err, "Password must be handled")
+    }
+    fmt.Print("\nRepeat password: ")
     bytepwr, err := term.ReadPassword(int(syscall.Stdin))
+    if err != nil {
+        assert.NoError(err, "Password must be handled")
+    }
     if !bytes.Equal(bytepw, bytepwr) {
-        fmt.Println("Error: passwords does not match.")
+        fmt.Println("\nError: passwords does not match.")
         os.Exit(1)
     }
     password = string(bytepw)
 
-    fmt.Print("First name (leave blank for null): ")
+    fmt.Print("\nFirst name (leave blank for null): ")
     _, err = fmt.Scanln(&firstName)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "unexpected newline") {
 		assert.NoError(err, "Scaning string should work???")
 	}
 
     fmt.Print("Last name (leave blank for null): ")
     _, err = fmt.Scanln(&lastName)
-	if err != nil {
+	if err != nil && !strings.Contains(err.Error(), "unexpected newline") {
 		assert.NoError(err, "Scaning string should work???")
 	}
 

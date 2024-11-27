@@ -9,18 +9,9 @@ import (
 )
 
 func runAssert(msg string, args ...interface{}) {
-	slogValues := []interface{}{
-		"msg",
-		msg,
-		"area",
-		"Assert",
-	}
-	slogValues = append(slogValues, args...)
 	fmt.Fprintf(os.Stderr, "ARGS: %+v\n", args)
 	fmt.Fprintf(os.Stderr, "ASSERT\n")
-	for i := 0; i < len(slogValues); i += 2 {
-		fmt.Fprintf(os.Stderr, "   %s=%v\n", slogValues[i], slogValues[i+1])
-	}
+	fmt.Fprintf(os.Stderr, "msg=%v\n", msg)
 	fmt.Fprintln(os.Stderr, string(debug.Stack()))
 	os.Exit(1)
 }

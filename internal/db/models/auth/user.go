@@ -57,11 +57,12 @@ type Users interface {
 }
 
 type users struct {
-	db *sqlx.DB
+	db          *sqlx.DB
+	permissions Permissions
 }
 
 func NewUsers(db *sqlx.DB) Users {
-	return &users{db: db}
+	return &users{db: db, permissions: NewPermissions(db)}
 }
 
 func (u *users) GetById(id int) (*User, error) {
@@ -78,7 +79,7 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 	var user User
 	err := u.db.Get(
 		&user,
-		`UPDATE auth_user SET last_login = now() WHERE oauth_id = $2 RETURNING *`,
+		`UPDATE auth_user SET last_login = now() WHERE oauth_id = $1 RETURNING *`,
 		guser.UserID)
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -99,21 +100,24 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 
 func (u *users) CreateSuperAdmin(email, password, firstName, lastName string) error {
 	var userId int
-	err := u.db.Get(
-		&userId,
-		`INSERT INTO auth_user (password, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, now())`,
+	rows, err := u.db.Query(
+		`INSERT INTO auth_user (password, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, now()) RETURNING id`,
 		getUserPasswordHash(password),
 		email,
 		utils.NewNullString(firstName),
 		utils.NewNullString(lastName),
 	)
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		rows.Scan(&userId)
+	} else {
+		return errors.New("failed to get user id as returning from insetion")
+	}
 
-
-    
-	panic("Not implemented")
+	return u.permissions.AddPermissionForUser(userId, SuperAdmin)
 }
 
 func getUserPasswordHash(password string) string {

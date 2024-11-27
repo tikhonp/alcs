@@ -6,7 +6,6 @@ import (
 )
 
 type ModelsFactory interface {
-	AuthPermissions() auth.Permissions
 	AuthUsers() auth.Users
 }
 
@@ -18,10 +17,6 @@ func newModelsFactory(db *sqlx.DB) ModelsFactory {
 	return &modelsFactory{
 		users: auth.NewUsers(db),
 	}
-}
-
-func (f *modelsFactory) AuthPermissions() auth.Permissions {
-	panic("not implemented")
 }
 
 func (f *modelsFactory) AuthUsers() auth.Users {
