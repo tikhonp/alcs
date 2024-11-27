@@ -14,12 +14,14 @@ func (ah *AuthHandler) OAuthCallback(c echo.Context) error {
 
 	guser, err := gothic.CompleteUserAuth(c.Response(), c.Request().WithContext(ctx))
 	if err != nil {
-		return err
+		ah.Annalist.Error(err, "OAUTH callback")
+		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
 	user, err := ah.Db.AuthUsers().FromOAuth(&guser)
 	if err != nil {
-		return err
+		ah.Annalist.Error(err, "OAUTH CALLBACK new user creation")
+		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
 	auth.Login(c, user.Id)

@@ -8,6 +8,7 @@ import (
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
 	"github.com/tikhonp/alcs/internal/router"
+	"github.com/tikhonp/alcs/internal/util/annalist"
 )
 
 func main() {
@@ -26,9 +27,12 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Annalist
+	annalistManager := annalist.NewDefaultAnnalist(cfg.Server.Debug)
+
 	// Start the server
 	r := router.New(cfg)
-	router.RegisterRoutes(r, cfg, modelsFactory)
+	router.RegisterRoutes(r, cfg, modelsFactory, annalistManager)
 	r.Logger.Fatal(router.Start(r, cfg))
 
 }

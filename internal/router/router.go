@@ -13,6 +13,7 @@ import (
 	mainpage "github.com/tikhonp/alcs/internal/apps/main_page"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
+	"github.com/tikhonp/alcs/internal/util/annalist"
 	authutil "github.com/tikhonp/alcs/internal/util/auth"
 )
 
@@ -25,7 +26,6 @@ func New(cfg *config.Config) *echo.Echo {
 	// TODO: Set proper logger
 	e.Logger.SetLevel(log.DEBUG)
 
-
 	e.Pre(middleware.RemoveTrailingSlash())
 
 	if e.Debug {
@@ -36,7 +36,7 @@ func New(cfg *config.Config) *echo.Echo {
 	} else {
 		e.Use(middleware.Logger())
 	}
-    e.Use(middleware.Recover())
+    // e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(
 		middleware.CORSConfig{
@@ -53,13 +53,12 @@ func New(cfg *config.Config) *echo.Echo {
 
 	e.Use(authutil.AuthMiddleware())
 
-
 	return e
 }
 
-func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory) {
+func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory, am annalist.AnnalistManager) {
 	mainpage.ConfigureMainPageGroup(e.Group(""), cfg, modelsFactory)
-	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory)
+	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory, am.GetAnnalist("AUTH"))
 }
 
 func Start(e *echo.Echo, cfg *config.Config) error {
