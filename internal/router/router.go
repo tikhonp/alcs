@@ -25,6 +25,7 @@ func New(cfg *config.Config) *echo.Echo {
 	// TODO: Set proper logger
 	e.Logger.SetLevel(log.DEBUG)
 
+
 	e.Pre(middleware.RemoveTrailingSlash())
 
 	if e.Debug {
@@ -35,6 +36,7 @@ func New(cfg *config.Config) *echo.Echo {
 	} else {
 		e.Use(middleware.Logger())
 	}
+    e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(
 		middleware.CORSConfig{
@@ -50,6 +52,7 @@ func New(cfg *config.Config) *echo.Echo {
 	e.Use(session.Middleware(store))
 
 	e.Use(authutil.AuthMiddleware())
+
 
 	return e
 }

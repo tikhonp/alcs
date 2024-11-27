@@ -2,6 +2,7 @@ package auth
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"time"
@@ -9,6 +10,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/markbates/goth"
 	"github.com/tikhonp/alcs/internal/db/utils"
+	"github.com/tikhonp/alcs/internal/util/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
@@ -44,10 +47,13 @@ type Users interface {
 	GetById(id int) (*User, error)
 
 	// IsUserHasPermissions checks if user has specified permissions
-	IsUserHasPermissions(userId int, permissionCodenames ...string) (bool, error)
+	IsUserHasPermissions(userId int, permissions ...Permission) (bool, error)
 
 	// FromOAuth finds user by goth user or creates new one
 	FromOAuth(guser *goth.User) (*User, error)
+
+	// CreateSuperAdmin creates new user with superadmin priveleages
+	CreateSuperAdmin(email, password, firstName, lastName string) error
 }
 
 type users struct {
@@ -64,7 +70,7 @@ func (u *users) GetById(id int) (*User, error) {
 	return &user, err
 }
 
-func (u *users) IsUserHasPermissions(userId int, permissionCodenames ...string) (bool, error) {
+func (u *users) IsUserHasPermissions(userId int, permission ...Permission) (bool, error) {
 	panic("Not implemented")
 }
 
@@ -72,22 +78,48 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 	var user User
 	err := u.db.Get(
 		&user,
-		`SELECT * FROM auth_user WHERE oauth_id = $1 LIMIT 1`,
+		`UPDATE auth_user SET last_login = now() WHERE oauth_id = $2 RETURNING *`,
 		guser.UserID)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// Create new user
 		err = u.db.Get(
 			&user,
-			`INSERT INTO auth_user (oauth_id, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+			`INSERT INTO auth_user (oauth_id, email, first_name, last_name, date_joined, last_login) VALUES ($1, $2, $3, $4, now(), now()) RETURNING *`,
 			guser.UserID,
 			guser.Email,
 			utils.NewNullString(guser.FirstName),
-            utils.NewNullString(guser.LastName),
-			time.Now(),
+			utils.NewNullString(guser.LastName),
 		)
 		return &user, err
 	}
 
 	return &user, err
+}
+
+func (u *users) CreateSuperAdmin(email, password, firstName, lastName string) error {
+	var userId int
+	err := u.db.Get(
+		&userId,
+		`INSERT INTO auth_user (password, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, now())`,
+		getUserPasswordHash(password),
+		email,
+		utils.NewNullString(firstName),
+		utils.NewNullString(lastName),
+	)
+    if err != nil {
+        return err
+    }
+
+
+    
+	panic("Not implemented")
+}
+
+func getUserPasswordHash(password string) string {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		assert.NoError(err, "Failed to create password hash")
+	}
+	return base64.StdEncoding.EncodeToString(bytes)
 }

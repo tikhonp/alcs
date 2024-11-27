@@ -26,14 +26,14 @@ func AuthMiddleware() echo.MiddlewareFunc {
 	}
 }
 
-func PermissionMiddleware(users auth.Users, permissionCodenames ...string) echo.MiddlewareFunc {
+func PermissionMiddleware(users auth.Users, permissions ...auth.Permission) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userId, ok := c.Get("userId").(int)
 			if !ok {
 				return echo.NewHTTPError(http.StatusUnauthorized)
 			}
-			granted, err := users.IsUserHasPermissions(userId, permissionCodenames...)
+			granted, err := users.IsUserHasPermissions(userId, permissions...)
 			if err != nil {
 				return err
 			}
