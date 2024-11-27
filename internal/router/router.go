@@ -13,6 +13,7 @@ import (
 	mainpage "github.com/tikhonp/alcs/internal/apps/main_page"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
+	"github.com/tikhonp/alcs/internal/util"
 	"github.com/tikhonp/alcs/internal/util/annalist"
 	authutil "github.com/tikhonp/alcs/internal/util/auth"
 )
@@ -36,7 +37,7 @@ func New(cfg *config.Config) *echo.Echo {
 	} else {
 		e.Use(middleware.Logger())
 	}
-    // e.Use(middleware.Recover())
+	// e.Use(middleware.Recover())
 
 	e.Use(middleware.CORSWithConfig(
 		middleware.CORSConfig{
@@ -52,6 +53,8 @@ func New(cfg *config.Config) *echo.Echo {
 	e.Use(session.Middleware(store))
 
 	e.Use(authutil.AuthMiddleware())
+
+	e.Validator = util.NewDefaultValidator()
 
 	return e
 }

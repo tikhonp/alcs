@@ -7,24 +7,22 @@ import (
 
 templ MainPage(isAuthed bool, user *auth.User) {
 	@genericviews.Base("СКУД ПОСТОВОЙ") {
-		<section class="section">
-			<div class="container">
-				<h1 class="title">
-					Купил мужик шляпу, а она ему как раз.
-				</h1>
-				if isAuthed {
-					<p class="subtitle">
-						{ user.String() }
-					</p>
-					<p class="subtitle">
-						<a href="/auth/logout">logout</a>
-					</p>
-				} else {
-					<p class="subtitle">
-						<a href="/auth/login">login</a>
-					</p>
-				}
-			</div>
-		</section>
+		@genericviews.Section() {
+			<h1 class="title">
+				Купил мужик шляпу, а она ему как раз.
+			</h1>
+			if isAuthed {
+				<p class="subtitle">
+					{ user.String() }
+				</p>
+				<p class="subtitle">
+					<a href="/auth/logout">logout</a>
+				</p>
+			} else {
+				<p class="subtitle">
+					<a href="/auth/login">login</a>
+				</p>
+			}
+		}
 	}
 }

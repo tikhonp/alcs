@@ -24,7 +24,7 @@ func (ah *AuthHandler) OAuthCallback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest)
 	}
 
-	auth.Login(c, user.Id)
+	auth.LoginByUserId(c, user.Id)
 
 	return c.Redirect(http.StatusMovedPermanently, "/")
 }
@@ -48,7 +48,7 @@ func (ah *AuthHandler) OAuthProvider(c echo.Context) error {
 			ah.Annalist.Error(err, "OAUTH callback")
 			return echo.NewHTTPError(http.StatusBadRequest)
 		}
-		auth.Login(c, user.Id)
+		auth.LoginByUserId(c, user.Id)
 		return c.Redirect(http.StatusMovedPermanently, "/")
 	}
 

@@ -2,19 +2,25 @@ package views
 
 import genericviews "github.com/tikhonp/alcs/internal/generic_views"
 
-templ LoginPage(nextPath string) {
+templ LoginPage(nextPath, errors string) {
 	@genericviews.Base("СКУД - ВХОД") {
-		<section class="section">
-			<div class="container">
-				<h1 class="title">
-					Login as
-				</h1>
-			</div>
-		</section>
-		<section class="section">
-			<div class="container">
-				<a class="button is-link is-light" href="/auth/google?next={ nextPath }">Войти с Google</a>
-			</div>
-		</section>
+		@genericviews.Section() {
+			<h1 class="title">
+				Login as
+			</h1>
+		}
+		@genericviews.Section() {
+			<a class="button is-link is-light" href="/auth/google?next={ nextPath }">Войти с Google</a>
+		}
+		@genericviews.Section() {
+			<form method="post">
+				@genericviews.InputField("email", "Email", "email", "user@example.com")
+				@genericviews.InputField("password", "Password", "password", "")
+				@genericviews.Button("Войти", "submit")
+			</form>
+			if errors != "" {
+				<p>Errors: { errors }</p>
+			}
+		}
 	}
 }

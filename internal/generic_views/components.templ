@@ -2,6 +2,23 @@ package genericviews
 
 templ Section() {
 	<section class="section">
-		{ children... }
+		<div class="container">
+			{ children... }
+		</div>
 	</section>
+}
+
+templ InputField(name, label, inputType, placeholder string) {
+	<div class="field">
+		<label class="label">{ label }</label>
+		<div class="control">
+			<input class="input" name={ name } type={ inputType } placeholder={ placeholder }/>
+		</div>
+	</div>
+}
+
+templ Button(label, buttonType string) {
+	<div class="control">
+		<button type={ buttonType } class="button is-primary">{ label }</button>
+	</div>
 }

@@ -45,16 +45,16 @@ func (p *permissions) AddPermissionForUser(userId int, perm Permission) error {
 	if rows.Next() {
 		rows.Scan(&permissionId)
 	} else {
-        rows, err = p.db.Query("INSERT INTO auth_permission (name, codename) VALUES ($1, $2) RETURNING id", perm.name, perm.code)
-        if err != nil {
-            return err
-        }
-        defer rows.Close()
-        if rows.Next() {
-            rows.Scan(&permissionId)
-        } else {
-            return errors.New("no id in insert permission statements")
-        }
+		rows, err = p.db.Query("INSERT INTO auth_permission (name, codename) VALUES ($1, $2) RETURNING id", perm.name, perm.code)
+		if err != nil {
+			return err
+		}
+		defer rows.Close()
+		if rows.Next() {
+			rows.Scan(&permissionId)
+		} else {
+			return errors.New("no id in insert permission statements")
+		}
 	}
 	_, err = p.db.Query("INSERT INTO auth_user_permissions (user_id, permission_id) VALUES ($1, $2)", userId, permissionId)
 	return err

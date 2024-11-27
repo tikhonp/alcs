@@ -54,6 +54,10 @@ type Users interface {
 
 	// CreateSuperAdmin creates new user with superadmin priveleages
 	CreateSuperAdmin(email, password, firstName, lastName string) error
+
+	// ValidateUserAuth checks if user with given email and password exsits
+	// validates passwords and returns user id otherwise error
+	ValidateUserAuth(email, password string) (*int, error)
 }
 
 type users struct {
@@ -120,10 +124,34 @@ func (u *users) CreateSuperAdmin(email, password, firstName, lastName string) er
 	return u.permissions.AddPermissionForUser(userId, SuperAdmin)
 }
 
+func (u *users) ValidateUserAuth(email, password string) (*int, error) {
+	var user User
+	err := u.db.Get(&user, "SELECT * FROM auth_user WHERE email = $1", email)
+	if err != nil {
+		return nil, err
+	}
+	if !user.Password.Valid {
+		return nil, errors.New("user does not set password")
+	}
+	err = compareEncodedHashAndPassword(user.Password.String, password)
+	if err != nil {
+		return nil, err
+	}
+	return &user.Id, nil
+}
+
 func getUserPasswordHash(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		assert.NoError(err, "Failed to create password hash")
 	}
 	return base64.StdEncoding.EncodeToString(bytes)
+}
+
+func compareEncodedHashAndPassword(hash, password string) error {
+	bytes, err := base64.StdEncoding.DecodeString(hash)
+	if err != nil {
+		return err
+	}
+	return bcrypt.CompareHashAndPassword(bytes, []byte(password))
 }

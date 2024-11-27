@@ -26,7 +26,8 @@ func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.Mode
 		}
 	})
 
-	g.GET("/login", ah.Login)
+	g.GET("/login", ah.LoginGet)
+	g.POST("/login", ah.LoginPost)
 
 	g.GET("/logout", ah.Logout)
 
