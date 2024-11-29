@@ -18,13 +18,17 @@ func (ah *AuthHandler) LoginGet(c echo.Context) error {
 	return util.TemplRender(c, views.LoginPage(nextPath, ""))
 }
 
+func (ah *AuthHandler) LoginByEmailAndPassword(c echo.Context) error {
+	return util.TemplRender(c, views.LoginForm(""))
+}
+
 type loginModel struct {
 	Email    string `form:"email" validate:"required"`
 	Password string `form:"password" validate:"required"`
 }
 
 func (ah *AuthHandler) LoginPost(c echo.Context) error {
-    m := new(loginModel)
+	m := new(loginModel)
 	if err := c.Bind(m); err != nil {
 		return err
 	}
@@ -39,7 +43,7 @@ func (ah *AuthHandler) LoginPost(c echo.Context) error {
 	if nextPath == "" {
 		nextPath = "/"
 	}
-	return c.Redirect(http.StatusMovedPermanently, nextPath)
+	return c.Redirect(http.StatusTemporaryRedirect, nextPath)
 }
 
 func (ah *AuthHandler) Logout(c echo.Context) error {

@@ -26,7 +26,7 @@ func (ah *AuthHandler) OAuthCallback(c echo.Context) error {
 
 	auth.LoginByUserId(c, user.Id)
 
-	return c.Redirect(http.StatusMovedPermanently, "/")
+	return c.Redirect(http.StatusTemporaryRedirect, "/")
 }
 
 func (ah *AuthHandler) OAuthLogout(c echo.Context) error {
@@ -49,7 +49,7 @@ func (ah *AuthHandler) OAuthProvider(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusBadRequest)
 		}
 		auth.LoginByUserId(c, user.Id)
-		return c.Redirect(http.StatusMovedPermanently, "/")
+		return c.Redirect(http.StatusTemporaryRedirect, "/")
 	}
 
 	gothic.BeginAuthHandler(c.Response(), c.Request().WithContext(ctx))

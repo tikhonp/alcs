@@ -1,0 +1,45 @@
+package views
+
+import (
+	"github.com/tikhonp/alcs/internal/db/models/auth"
+	genericviews "github.com/tikhonp/alcs/internal/generic_views"
+)
+
+templ UserPage(user *auth.User, hasSuperAdminPermission bool) {
+	@genericviews.Base("User page") {
+		@genericviews.Navbar(user) {
+			if hasSuperAdminPermission {
+				<a href="/superadmin" class="navbar-item">
+					СУПЕРАДМИНКА
+				</a>
+			}
+		}
+		@genericviews.Section() {
+			<p class="title is-2">Пользователь</p>
+			<p>
+				Имя и фамилия: 
+				if user.FirstName.Valid {
+					{ user.FirstName.String }
+				} else {
+					&lt;имя не заполнено&gt;
+				}
+				if user.LastName.Valid {
+					{ user.LastName.String }
+				} else {
+					&lt;фамилия не заполнена&gt;
+				}
+			</p>
+			if user.LastLogin.Valid {
+				<p>Последнее время авторизации: { user.LastLogin.Time.String() }</p>
+			}
+			if user.PhoneNumber.Valid {
+				<p>Номер телефона: { user.PhoneNumber.String }</p>
+			}
+		}
+		@genericviews.Section() {
+			<p class="subtitle">
+				<a href="/auth/logout">Выйти из аккаунта</a>
+			</p>
+		}
+	}
+}

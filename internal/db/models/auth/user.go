@@ -18,7 +18,6 @@ type User struct {
 	Id          int            `db:"id"`
 	Password    sql.NullString `db:"password"`
 	LastLogin   sql.NullTime   `db:"last_login"`
-	IsSuperuser bool           `db:"is_superuser"`
 	Email       string         `db:"email"`
 	PhoneNumber sql.NullString `db:"phone_number"`
 	FirstName   sql.NullString `db:"first_name"`
@@ -76,7 +75,34 @@ func (u *users) GetById(id int) (*User, error) {
 }
 
 func (u *users) IsUserHasPermissions(userId int, permission ...Permission) (bool, error) {
-	panic("Not implemented")
+	var permissionCodes []string
+	for _, v := range permission {
+		permissionCodes = append(permissionCodes, v.code)
+	}
+	query, args, err := sqlx.In(
+		`
+        SELECT 1 
+        FROM auth_user_permissions
+        JOIN auth_permission ap on ap.id = auth_user_permissions.permission_id
+        WHERE user_id = ? AND ap.codename IN (?)
+        `,
+		userId,
+		permissionCodes,
+	)
+	if err != nil {
+		return false, err
+	}
+	query = u.db.Rebind(query)
+	rows, err := u.db.Query(query, args...)
+	if err != nil {
+		return false, err
+	}
+	defer rows.Close()
+	if rows.Next() {
+		return true, nil
+	} else {
+		return false, nil
+	}
 }
 
 func (u *users) FromOAuth(guser *goth.User) (*User, error) {

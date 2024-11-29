@@ -1,5 +1,7 @@
 package genericviews
 
+import db_auth "github.com/tikhonp/alcs/internal/db/models/auth"
+
 templ Section() {
 	<section class="section">
 		<div class="container">
@@ -21,4 +23,28 @@ templ Button(label, buttonType string) {
 	<div class="control">
 		<button type={ buttonType } class="button is-primary">{ label }</button>
 	</div>
+}
+
+templ Navbar(user *db_auth.User) {
+	<nav class="navbar" role="navigation" aria-label="main navigation">
+		<div class="navbar-brand">
+			<a class="navbar-item" href="/">СКУД</a>
+		</div>
+		<div class="navbar-start">
+			{ children... }
+		</div>
+		<div class="navbar-menu">
+			<div class="navbar-end">
+				if user != nil {
+					<a href="/user" class="navbar-item">
+						{ user.Email }
+					</a>
+				} else {
+					<a href="/auth/login" class="navbar-item">
+						Авторизация
+					</a>
+				}
+			</div>
+		</div>
+	</nav>
 }

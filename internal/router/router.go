@@ -11,6 +11,8 @@ import (
 	"github.com/markbates/goth/gothic"
 	"github.com/tikhonp/alcs/internal/apps/auth"
 	mainpage "github.com/tikhonp/alcs/internal/apps/main_page"
+	"github.com/tikhonp/alcs/internal/apps/superadmin"
+	"github.com/tikhonp/alcs/internal/apps/user"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
 	"github.com/tikhonp/alcs/internal/util"
@@ -62,6 +64,8 @@ func New(cfg *config.Config) *echo.Echo {
 func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory, am annalist.AnnalistManager) {
 	mainpage.ConfigureMainPageGroup(e.Group(""), cfg, modelsFactory)
 	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory, am.GetAnnalist("AUTH"))
+	superadmin.ConfigureSuperAdminGroup(e.Group("/superadmin"), cfg, modelsFactory, am.GetAnnalist("SUPERADMIN"))
+	user.ConfigureUserGroup(e.Group("/user"), cfg, modelsFactory, am.GetAnnalist("USER"))
 }
 
 func Start(e *echo.Echo, cfg *config.Config) error {

@@ -13,7 +13,7 @@ import (
 )
 
 func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.ModelsFactory, a annalist.Annalist) {
-    ah := handlers.AuthHandler{Db: modelsFactory, Annalist: a}
+	ah := handlers.AuthHandler{Db: modelsFactory, Annalist: a}
 
 	goth.UseProviders(
 		google.New(cfg.Auth.GoogleKey, cfg.Auth.GoogleSecret, fmt.Sprintf("%s/auth/google/callback", cfg.BaseHost)),
@@ -27,6 +27,7 @@ func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.Mode
 	})
 
 	g.GET("/login", ah.LoginGet)
+	g.GET("/login/by-password", ah.LoginByEmailAndPassword)
 	g.POST("/login", ah.LoginPost)
 
 	g.GET("/logout", ah.Logout)

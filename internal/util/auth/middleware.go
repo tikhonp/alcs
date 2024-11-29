@@ -26,12 +26,24 @@ func AuthMiddleware() echo.MiddlewareFunc {
 	}
 }
 
+func AuthRequiredMiddleware(users auth.Users) echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			_, ok := c.Get("userId").(int)
+			if !ok {
+				return c.Redirect(http.StatusTemporaryRedirect, "/auth/login")
+			}
+			return next(c)
+		}
+	}
+}
+
 func PermissionMiddleware(users auth.Users, permissions ...auth.Permission) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			userId, ok := c.Get("userId").(int)
 			if !ok {
-				return echo.NewHTTPError(http.StatusUnauthorized)
+				return c.Redirect(http.StatusTemporaryRedirect, "/auth/login")
 			}
 			granted, err := users.IsUserHasPermissions(userId, permissions...)
 			if err != nil {
