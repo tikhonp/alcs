@@ -20,5 +20,9 @@ func (sah *SuperAdminHandler) Clients(c echo.Context) error {
     if err != nil {
         return err
     }
-    return util.TemplRender(c, views.Clients(user))
+    allOrganizations, err := sah.Db.AlcsOrganizations().GetAll() 
+    if err != nil {
+        return err
+    }
+    return util.TemplRender(c, views.Clients(user, allOrganizations))
 }

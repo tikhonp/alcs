@@ -3,6 +3,7 @@ package views
 import (
 	"github.com/tikhonp/alcs/internal/db/models/auth"
 	genericviews "github.com/tikhonp/alcs/internal/generic_views"
+	"github.com/tikhonp/alcs/internal/db/models/alcs"
 )
 
 templ SuperadminBasePage(user *auth.User) {
@@ -24,10 +25,14 @@ templ SuperadminPage(user *auth.User) {
 	}
 }
 
-templ Clients(user *auth.User) {
+templ Clients(user *auth.User, allOrganizations []alcs.Organization) {
 	@SuperadminBasePage(user) {
 		@genericviews.Section() {
 			<p>CLIENTS</p>
+
+            for _, o := range allOrganizations {
+                <p>{ o.String() }</p>
+            }
 		}
 	}
 }

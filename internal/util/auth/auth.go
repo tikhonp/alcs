@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/labstack/echo/v4"
@@ -42,5 +43,11 @@ func GetUser(ctx echo.Context, users auth.Users) (*auth.User, error) {
 		return nil, ErrNotAuthentificated
 	}
 
-	return users.GetById(userId)
+	user, err := users.GetById(userId)
+	if errors.Is(err, sql.ErrNoRows) {
+		ctx.Set("userId", nil)
+		return nil, ErrNotAuthentificated
+	} else {
+		return user, err
+	}
 }
