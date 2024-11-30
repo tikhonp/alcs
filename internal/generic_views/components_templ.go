@@ -347,7 +347,7 @@ func Navbar(user *db_auth.User) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></nav><script>\n        document.addEventListener('DOMContentLoaded', () => {\n          const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);\n          $navbarBurgers.forEach( el => {\n            el.addEventListener('click', () => {\n              const target = el.dataset.target;\n              const $target = document.getElementById(target);\n              el.classList.toggle('is-active');\n              $target.classList.toggle('is-active');\n            });\n          });\n\n        });\n    </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></nav><script>\n        document.addEventListener('DOMContentLoaded', () => {\n          const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);\n          $navbarBurgers.forEach( el => {\n            el.addEventListener('click', () => {\n              const target = el.dataset.target;\n              const $target = document.getElementById(target);\n              el.classList.toggle('is-active');\n              $target.classList.toggle('is-active');\n            });\n          });\n        });\n    </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

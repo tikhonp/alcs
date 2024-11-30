@@ -43,7 +43,7 @@ func PermissionMiddleware(users auth.Users, permissions ...auth.Permission) echo
 		return func(c echo.Context) error {
 			userId, ok := c.Get("userId").(int)
 			if !ok {
-				return c.Redirect(http.StatusTemporaryRedirect, "/auth/login")
+				return c.Redirect(http.StatusSeeOther, "/auth/login")
 			}
 			granted, err := users.IsUserHasPermissions(userId, permissions...)
 			if err != nil {

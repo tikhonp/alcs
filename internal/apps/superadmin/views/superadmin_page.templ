@@ -1,0 +1,33 @@
+package views
+
+import (
+	"github.com/tikhonp/alcs/internal/db/models/auth"
+	genericviews "github.com/tikhonp/alcs/internal/generic_views"
+)
+
+templ SuperadminBasePage(user *auth.User) {
+	@genericviews.Base("СУПЕРАДМИНКА") {
+		@genericviews.Navbar(user) {
+			<a href="/superadmin/clients" class="navbar-item">
+				Клиенты
+			</a>
+		}
+		{ children... }
+	}
+}
+
+templ SuperadminPage(user *auth.User) {
+	@SuperadminBasePage(user) {
+		@genericviews.Section() {
+			<p>YEAH! SUPERADMIN</p>
+		}
+	}
+}
+
+templ Clients(user *auth.User) {
+	@SuperadminBasePage(user) {
+		@genericviews.Section() {
+			<p>CLIENTS</p>
+		}
+	}
+}

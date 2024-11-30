@@ -20,4 +20,5 @@ func ConfigureSuperAdminGroup(g *echo.Group, cfg *config.Config, modelsFactory d
 	g.Use(auth.PermissionMiddleware(modelsFactory.AuthUsers(), db_auth.SuperAdmin))
 
 	g.GET("", sah.MainPage)
+    g.GET("/clients", sah.Clients)
 }
