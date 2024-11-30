@@ -2,29 +2,32 @@ package views
 
 import genericviews "github.com/tikhonp/alcs/internal/generic_views"
 
-templ LoginPage(nextPath, errors string) {
+templ LoginPage(nextPath string) {
 	@genericviews.Base("СКУД - ВХОД") {
-		@genericviews.Section() {
-			<h1 class="title">
-				Login as
-			</h1>
-		}
-		@genericviews.Section() {
-			<a class="button is-link is-light" href="/auth/google?next={ nextPath }">Войти с Google</a>
-		}
-		@genericviews.Section() {
-			<button class="button is-light" hx-swap="outerHTML" hx-get="/auth/login/by-password">Войти по паролю</button>
-		}
+		<div id="login-page">
+			@genericviews.Section() {
+				<h1 class="title">
+					Войти с помощью
+				</h1>
+				<a class="button is-link is-light" href="/auth/google?next={ nextPath }">Войти с Google</a>
+			}
+			@genericviews.Section() {
+				<button class="button is-light" hx-target="#login-page" hx-get="/auth/login/by-password">Войти по паролю</button>
+			}
+		</div>
 	}
 }
 
-templ LoginForm(errors string) {
-	<form method="post">
-		@genericviews.InputField("email", "Email", "email", "user@example.com")
-		@genericviews.InputField("password", "Password", "password", "")
-		@genericviews.Button("Войти", "submit")
-	</form>
-	if errors != "" {
-		<p>Errors: { errors }</p>
+templ LoginForm(email, password, errors string) {
+	@genericviews.Section() {
+		<h1 class="title">Вход по паролю</h1>
+		<form hx-post="/auth/login" hx-target="#login-page">
+			@genericviews.InputFieldRequired("email", "Email", "email", "user@example.com", email)
+			@genericviews.InputFieldRequired("password", "Password", "password", "", password)
+            if errors != "" {
+                <p class="block tag is-danger is-light is-medium">{ errors }</p>
+            }
+			@genericviews.Button("Войти", "submit")
+		</form>
 	}
 }

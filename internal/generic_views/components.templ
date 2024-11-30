@@ -10,11 +10,20 @@ templ Section() {
 	</section>
 }
 
-templ InputField(name, label, inputType, placeholder string) {
+templ InputField(name, label, inputType, placeholder, value string) {
 	<div class="field">
 		<label class="label">{ label }</label>
 		<div class="control">
-			<input class="input" name={ name } type={ inputType } placeholder={ placeholder }/>
+			<input class="input" name={ name } type={ inputType } placeholder={ placeholder } value={ value }/>
+		</div>
+	</div>
+}
+
+templ InputFieldRequired(name, label, inputType, placeholder, value string) {
+	<div class="field">
+		<label class="label">{ label }</label>
+		<div class="control">
+			<input class="input" name={ name } type={ inputType } placeholder={ placeholder } value={ value } required/>
 		</div>
 	</div>
 }
@@ -29,11 +38,17 @@ templ Navbar(user *db_auth.User) {
 	<nav class="navbar" role="navigation" aria-label="main navigation">
 		<div class="navbar-brand">
 			<a class="navbar-item" href="/">СКУД</a>
+			<a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-data">
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+				<span aria-hidden="true"></span>
+			</a>
 		</div>
-		<div class="navbar-start">
-			{ children... }
-		</div>
-		<div class="navbar-menu">
+		<div class="navbar-menu" id="navbar-data">
+			<div class="navbar-start">
+				{ children... }
+			</div>
 			<div class="navbar-end">
 				if user != nil {
 					<a href="/user" class="navbar-item">
@@ -47,4 +62,17 @@ templ Navbar(user *db_auth.User) {
 			</div>
 		</div>
 	</nav>
+	<script>
+        document.addEventListener('DOMContentLoaded', () => {
+          const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+          $navbarBurgers.forEach( el => {
+            el.addEventListener('click', () => {
+              const target = el.dataset.target;
+              const $target = document.getElementById(target);
+              el.classList.toggle('is-active');
+              $target.classList.toggle('is-active');
+            });
+          });
+        });
+    </script>
 }

@@ -15,11 +15,11 @@ func (ah *AuthHandler) LoginGet(c echo.Context) error {
 	if nextPath == "" {
 		nextPath = "/"
 	}
-	return util.TemplRender(c, views.LoginPage(nextPath, ""))
+	return util.TemplRender(c, views.LoginPage(nextPath))
 }
 
 func (ah *AuthHandler) LoginByEmailAndPassword(c echo.Context) error {
-	return util.TemplRender(c, views.LoginForm(""))
+	return util.TemplRender(c, views.LoginForm("", "", ""))
 }
 
 type loginModel struct {
@@ -33,20 +33,20 @@ func (ah *AuthHandler) LoginPost(c echo.Context) error {
 		return err
 	}
 	if err := c.Validate(m); err != nil {
-		return util.TemplRender(c, views.LoginPage("", err.Error()))
+        return err
 	}
 	err := auth.LoginByEmailAndPassword(c, ah.Db.AuthUsers(), m.Email, m.Password)
 	if err != nil {
-		return util.TemplRender(c, views.LoginPage("", "Неверный логин или пароль"))
+		return util.TemplRender(c, views.LoginForm(m.Email, m.Password, "Неверный логин или пароль"))
 	}
 	nextPath := c.QueryParam("next")
 	if nextPath == "" {
 		nextPath = "/"
 	}
-	return c.Redirect(http.StatusTemporaryRedirect, nextPath)
+	return c.Redirect(http.StatusSeeOther, nextPath)
 }
 
 func (ah *AuthHandler) Logout(c echo.Context) error {
 	auth.Logout(c)
-	return c.Redirect(http.StatusMovedPermanently, "/")
+	return c.Redirect(http.StatusSeeOther, "/")
 }
