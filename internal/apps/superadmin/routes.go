@@ -21,4 +21,6 @@ func ConfigureSuperAdminGroup(g *echo.Group, cfg *config.Config, modelsFactory d
 
 	g.GET("", sah.MainPage)
     g.GET("/clients", sah.Clients)
+    g.GET("/clients/:id", sah.Client)
+    g.GET("/clients/create", sah.CreateClientPage)
 }

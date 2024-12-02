@@ -1,9 +1,9 @@
 package views
 
 import (
+	"github.com/tikhonp/alcs/internal/db/models/alcs"
 	"github.com/tikhonp/alcs/internal/db/models/auth"
 	genericviews "github.com/tikhonp/alcs/internal/generic_views"
-	"github.com/tikhonp/alcs/internal/db/models/alcs"
 )
 
 templ SuperadminBasePage(user *auth.User) {
@@ -28,11 +28,30 @@ templ SuperadminPage(user *auth.User) {
 templ Clients(user *auth.User, allOrganizations []alcs.Organization) {
 	@SuperadminBasePage(user) {
 		@genericviews.Section() {
-			<p>CLIENTS</p>
-
-            for _, o := range allOrganizations {
-                <p>{ o.String() }</p>
-            }
+			<a class="button block" href="/superadmin/clients/create">Добавить клиента</a>
+		}
+		@genericviews.Section() {
+			<h1 class="title">Cписок клиентов</h1>
+			if len(allOrganizations) == 0 {
+				<p>Список клиентов пуст</p>
+			}
+			for _, o := range allOrganizations {
+				<p>{ o.String() }</p>
+			}
 		}
 	}
+}
+
+templ Client(user *auth.User, o *alcs.Organization) {
+}
+
+templ CreateClient(user *auth.User) {
+    @SuperadminBasePage(user) {
+        @genericviews.Section() {
+			<h1 class="title">Создание клиента</h1>
+
+            
+
+        }
+    }
 }

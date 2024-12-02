@@ -57,6 +57,7 @@ func New(cfg *config.Config) *echo.Echo {
 	e.Use(authutil.AuthMiddleware())
 
 	e.Validator = util.NewDefaultValidator()
+	e.HTTPErrorHandler = util.HTTPErrorHandler
 
 	return e
 }

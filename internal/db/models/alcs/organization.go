@@ -2,9 +2,12 @@ package alcs
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
+	"net/http"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
 )
 
 type Organization struct {
@@ -25,6 +28,9 @@ type Organizations interface {
 
 	// Create instantiates new organization and saves it
 	Create(name, notes string) error
+
+	// GetById fetches organization with specific id
+	GetById(id int) (*Organization, error)
 }
 
 type organizations struct {
@@ -43,4 +49,13 @@ func (o *organizations) GetAll() ([]Organization, error) {
 
 func (o *organizations) Create(name, notes string) error {
 	panic("not implemented")
+}
+
+func (o *organizations) GetById(id int) (*Organization, error) {
+	var organization Organization
+	err := o.db.Get(&organization, "SELECT * FROM alcs_organization WHERE id = $1 LIMIT 1", id)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, echo.NewHTTPError(http.StatusNotFound)
+	}
+	return &organization, err
 }
