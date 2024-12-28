@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG GO_VERSION=1.23.2
+ARG GO_VERSION=1.23.4
 FROM --platform=$BUILDPLATFORM golang:${GO_VERSION} AS build
 
 WORKDIR /src
@@ -22,7 +22,7 @@ RUN apt-get update && \
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
 RUN export JAVA_HOME
 
-ADD --chmod=111 "https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-java/0.26.3/pkl-cli-java-0.26.3.jar" /bin/pkl
+ADD --chmod=111 "https://repo1.maven.org/maven2/org/pkl-lang/pkl-cli-java/0.27.1/pkl-cli-java-0.27.1.jar" /bin/pkl
 
 RUN go install "github.com/air-verse/air@latest"
 RUN go install "github.com/pressly/goose/v3/cmd/goose@latest"
