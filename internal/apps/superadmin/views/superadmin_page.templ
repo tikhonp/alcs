@@ -1,6 +1,7 @@
 package views
 
 import (
+	"fmt"
 	"github.com/tikhonp/alcs/internal/db/models/alcs"
 	"github.com/tikhonp/alcs/internal/db/models/auth"
 	genericviews "github.com/tikhonp/alcs/internal/generic_views"
@@ -36,22 +37,19 @@ templ Clients(user *auth.User, allOrganizations []alcs.Organization) {
 				<p>Список клиентов пуст</p>
 			}
 			for _, o := range allOrganizations {
-				<p>{ o.String() }</p>
+				<p>
+					<a href={ templ.URL(fmt.Sprintf("clients/%d", o.ID)) }>{ o.String() }</a>
+				</p>
 			}
 		}
 	}
 }
 
 templ Client(user *auth.User, o *alcs.Organization) {
-}
-
-templ CreateClient(user *auth.User) {
-    @SuperadminBasePage(user) {
-        @genericviews.Section() {
-			<h1 class="title">Создание клиента</h1>
-
-            
-
-        }
-    }
+	@SuperadminBasePage(user) {
+		@genericviews.Section() {
+			<h1 class="title">Информация о клиенте</h1>
+			<p>{ o.String() }</p>
+		}
+	}
 }

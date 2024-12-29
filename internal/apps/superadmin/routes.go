@@ -20,7 +20,8 @@ func ConfigureSuperAdminGroup(g *echo.Group, cfg *config.Config, modelsFactory d
 	g.Use(auth.PermissionMiddleware(modelsFactory.AuthUsers(), db_auth.SuperAdmin))
 
 	g.GET("", sah.MainPage)
-    g.GET("/clients", sah.Clients)
-    g.GET("/clients/:id", sah.Client)
-    g.GET("/clients/create", sah.CreateClientPage)
+	g.GET("/clients", sah.Clients)
+	g.GET("/clients/:id", sah.Client)
+	g.GET("/clients/create", sah.CreateOrganizationPage)
+	g.POST("/clients/create", sah.CreateOrganization)
 }

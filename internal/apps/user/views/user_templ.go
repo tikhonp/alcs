@@ -131,14 +131,14 @@ func UserPage(user *auth.User, hasSuperAdminPermission bool) templ.Component {
 					return templ_7745c5c3_Err
 				}
 				if user.UpdatedAt.Valid {
-					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Последнее время авторизации: ")
+					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<p>Updated AT: ")
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var7 string
 					templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(user.UpdatedAt.Time.String())
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/apps/user/views/user.templ`, Line: 33, Col: 91}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/apps/user/views/user.templ`, Line: 33, Col: 49}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 					if templ_7745c5c3_Err != nil {

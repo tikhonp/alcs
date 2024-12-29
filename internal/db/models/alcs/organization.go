@@ -30,7 +30,7 @@ type Organizations interface {
 	GetAll() ([]Organization, error)
 
 	// Create instantiates new organization and saves it
-	Create(name, notes string) error
+	Create(org *Organization) error
 
 	// GetById fetches organization with specific id
 	GetById(id int) (*Organization, error)
@@ -50,8 +50,10 @@ func (o *organizations) GetAll() ([]Organization, error) {
 	return orns, err
 }
 
-func (o *organizations) Create(name, notes string) error {
-	panic("not implemented")
+func (o *organizations) Create(org *Organization) error {
+	query := `INSERT INTO organizations (name, notes, is_active, created_at, updated_at)
+	          VALUES ($1, $2, true, NOW(), NOW()) RETURNING id`
+	return o.db.QueryRow(query, org.Name, org.Notes).Scan(&org.ID)
 }
 
 func (o *organizations) GetById(id int) (*Organization, error) {

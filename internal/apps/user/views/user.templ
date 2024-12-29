@@ -29,8 +29,8 @@ templ UserPage(user *auth.User, hasSuperAdminPermission bool) {
 					&lt;фамилия не заполнена&gt;
 				}
 			</p>
-			if user.LastLogin.Valid {
-				<p>Последнее время авторизации: { user.LastLogin.Time.String() }</p>
+			if user.UpdatedAt.Valid {
+				<p>Updated AT: { user.UpdatedAt.Time.String() }</p>
 			}
 			if user.PhoneNumber.Valid {
 				<p>Номер телефона: { user.PhoneNumber.String }</p>

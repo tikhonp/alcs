@@ -46,11 +46,3 @@ func (sah *SuperAdminHandler) Client(c echo.Context) error {
     }
     return util.TemplRender(c, views.Client(user, o))
 }
-
-func (sah *SuperAdminHandler) CreateClientPage(c echo.Context) error {
-    user, err := auth.GetUser(c, sah.Db.AuthUsers())
-    if err != nil {
-        return err
-    }
-    return util.TemplRender(c, views.CreateClient(user))
-}

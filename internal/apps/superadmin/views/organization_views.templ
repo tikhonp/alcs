@@ -1,0 +1,19 @@
+package views
+
+import (
+	"github.com/tikhonp/alcs/internal/db/models/auth"
+	genericviews "github.com/tikhonp/alcs/internal/generic_views"
+)
+
+templ CreateOrganizationPage(user *auth.User) {
+	@SuperadminBasePage(user) {
+		@genericviews.Section() {
+			<h1 class="title">Добавить Организацию</h1>
+			<form method="POST" action="/superadmin/clients/create">
+				@genericviews.InputFieldRequired("name", "Название", "text", "Введите название организации", "")
+				@genericviews.InputFieldRequired("notes", "Заметки", "text", "Введите заметки для организации", "")
+				@genericviews.Button("Создать", "submit")
+			</form>
+		}
+	}
+}
