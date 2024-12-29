@@ -11,13 +11,16 @@ import (
 )
 
 type Organization struct {
-	Id    int            `db:"id"`
-	Name  string         `db:"name"`
-	Notes sql.NullString `db:"notes"`
+	ID        int            `db:"id"`
+	Name      string         `db:"name"`
+	Notes     sql.NullString `db:"notes"`
+	IsActive  bool           `db:"is_active"`
+	CreatedAt sql.NullTime   `db:"created_at"`
+	UpdatedAt sql.NullTime   `db:"updated_at"`
 }
 
 func (o *Organization) String() string {
-	return fmt.Sprintf("Organization{id: %v, name: %v}", o.Id, o.Name)
+	return fmt.Sprintf("Organization{id: %v, name: %v}", o.ID, o.Name)
 }
 
 // Organization actions
@@ -43,7 +46,7 @@ func NewOrganizations(db *sqlx.DB) Organizations {
 
 func (o *organizations) GetAll() ([]Organization, error) {
 	var orns []Organization
-	err := o.db.Select(&orns, "SELECT * FROM alcs_organization")
+	err := o.db.Select(&orns, "SELECT * FROM organizations")
 	return orns, err
 }
 
@@ -53,7 +56,7 @@ func (o *organizations) Create(name, notes string) error {
 
 func (o *organizations) GetById(id int) (*Organization, error) {
 	var organization Organization
-	err := o.db.Get(&organization, "SELECT * FROM alcs_organization WHERE id = $1 LIMIT 1", id)
+	err := o.db.Get(&organization, "SELECT * FROM organizations WHERE id = $1 LIMIT 1", id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, echo.NewHTTPError(http.StatusNotFound)
 	}

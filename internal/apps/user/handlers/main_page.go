@@ -13,9 +13,9 @@ func (uh *UserHandler) MainPage(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	hasSuperadminPermission, err := uh.Db.AuthUsers().IsUserHasPermissions(user.Id, db_auth.SuperAdmin)
-    if err != nil {
-        return err
-    }
+	hasSuperadminPermission, err := uh.Db.AuthUsers().IsUserHasPermissions(user.ID, db_auth.SuperAdmin)
+	if err != nil {
+		return err
+	}
 	return util.TemplRender(c, views.UserPage(user, hasSuperadminPermission))
 }

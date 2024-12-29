@@ -37,7 +37,7 @@ func NewPermissions(db *sqlx.DB) Permissions {
 func (p *permissions) AddPermissionForUser(userId int, perm Permission) error {
 	var permissionId int
 	// get permission id, check if it exists
-	rows, err := p.db.Query("SELECT id FROM auth_permission WHERE codename = $1", perm.code)
+	rows, err := p.db.Query("SELECT id FROM auth_permissions WHERE codename = $1", perm.code)
 	if err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (p *permissions) AddPermissionForUser(userId int, perm Permission) error {
 	if rows.Next() {
 		rows.Scan(&permissionId)
 	} else {
-		rows, err = p.db.Query("INSERT INTO auth_permission (name, codename) VALUES ($1, $2) RETURNING id", perm.name, perm.code)
+		rows, err = p.db.Query("INSERT INTO auth_permissions (name, codename) VALUES ($1, $2) RETURNING id", perm.name, perm.code)
 		if err != nil {
 			return err
 		}

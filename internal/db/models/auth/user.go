@@ -15,16 +15,17 @@ import (
 )
 
 type User struct {
-	Id          int            `db:"id"`
-	Password    sql.NullString `db:"password"`
-	LastLogin   sql.NullTime   `db:"last_login"`
-	Email       string         `db:"email"`
-	PhoneNumber sql.NullString `db:"phone_number"`
-	FirstName   sql.NullString `db:"first_name"`
-	LastName    sql.NullString `db:"last_name"`
-	IsActive    bool           `db:"is_active"`
-	DateJoined  time.Time      `db:"date_joined"`
-	OAuthId     sql.NullString `db:"oauth_id"`
+	ID           int            `db:"id"`
+	Email        string         `db:"email"`
+	PasswordHash sql.NullString `db:"password_hash"`
+	FirstName    sql.NullString `db:"first_name"`
+	LastName     sql.NullString `db:"last_name"`
+	PhoneNumber  sql.NullString `db:"phone_number"`
+	TelegramId   sql.NullInt64  `db:"telegram_id"`
+	OAuthId      sql.NullString `db:"oauth_id"`
+	IsActive     bool           `db:"is_active"`
+	CreatedAt    time.Time      `db:"created_at"`
+	UpdatedAt    sql.NullTime   `db:"updated_at"`
 }
 
 func (u *User) String() string {
@@ -36,7 +37,7 @@ func (u *User) String() string {
 	if u.LastName.Valid {
 		lastName = u.LastName.String
 	}
-	return fmt.Sprintf("User{id: %v, email: %v, firstName: %v, lastName: %v}", u.Id, u.Email, firstName, lastName)
+	return fmt.Sprintf("User{id: %v, email: %v, firstName: %v, lastName: %v}", u.ID, u.Email, firstName, lastName)
 }
 
 // User Actions
@@ -70,7 +71,7 @@ func NewUsers(db *sqlx.DB) Users {
 
 func (u *users) GetById(id int) (*User, error) {
 	var user User
-	err := u.db.Get(&user, `SELECT * FROM auth_user WHERE id = $1`, id)
+	err := u.db.Get(&user, `SELECT * FROM auth_users WHERE id = $1`, id)
 	return &user, err
 }
 
@@ -83,7 +84,7 @@ func (u *users) IsUserHasPermissions(userId int, permission ...Permission) (bool
 		`
         SELECT 1 
         FROM auth_user_permissions
-        JOIN auth_permission ap on ap.id = auth_user_permissions.permission_id
+        JOIN auth_permissions ap on ap.id = auth_user_permissions.permission_id
         WHERE user_id = ? AND ap.codename IN (?)
         `,
 		userId,
@@ -109,14 +110,15 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 	var user User
 	err := u.db.Get(
 		&user,
-		`UPDATE auth_user SET last_login = now() WHERE oauth_id = $1 RETURNING *`,
+		`SELECT * FROM auth_users WHERE oauth_id = $1`,
+		// `UPDATE auth_user SET last_login = now() WHERE oauth_id = $1 RETURNING *`,
 		guser.UserID)
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// Create new user
 		err = u.db.Get(
 			&user,
-			`INSERT INTO auth_user (oauth_id, email, first_name, last_name, date_joined, last_login) VALUES ($1, $2, $3, $4, now(), now()) RETURNING *`,
+			`INSERT INTO auth_users (oauth_id, email, first_name, last_name, date_joined, last_login) VALUES ($1, $2, $3, $4, now(), now()) RETURNING *`,
 			guser.UserID,
 			guser.Email,
 			utils.NewNullString(guser.FirstName),
@@ -131,7 +133,7 @@ func (u *users) FromOAuth(guser *goth.User) (*User, error) {
 func (u *users) CreateSuperAdmin(email, password, firstName, lastName string) error {
 	var userId int
 	rows, err := u.db.Query(
-		`INSERT INTO auth_user (password, email, first_name, last_name, date_joined) VALUES ($1, $2, $3, $4, now()) RETURNING id`,
+		`INSERT INTO auth_users (password_hash, email, first_name, last_name) VALUES ($1, $2, $3, $4) RETURNING id`,
 		getUserPasswordHash(password),
 		email,
 		utils.NewNullString(firstName),
@@ -152,18 +154,18 @@ func (u *users) CreateSuperAdmin(email, password, firstName, lastName string) er
 
 func (u *users) ValidateUserAuth(email, password string) (*int, error) {
 	var user User
-	err := u.db.Get(&user, "SELECT * FROM auth_user WHERE email = $1", email)
+	err := u.db.Get(&user, "SELECT * FROM auth_users WHERE email = $1", email)
 	if err != nil {
 		return nil, err
 	}
-	if !user.Password.Valid {
+	if !user.PasswordHash.Valid {
 		return nil, errors.New("user does not set password")
 	}
-	err = compareEncodedHashAndPassword(user.Password.String, password)
+	err = compareEncodedHashAndPassword(user.PasswordHash.String, password)
 	if err != nil {
 		return nil, err
 	}
-	return &user.Id, nil
+	return &user.ID, nil
 }
 
 func getUserPasswordHash(password string) string {

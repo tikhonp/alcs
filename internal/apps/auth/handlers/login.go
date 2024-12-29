@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -33,10 +34,11 @@ func (ah *AuthHandler) LoginPost(c echo.Context) error {
 		return err
 	}
 	if err := c.Validate(m); err != nil {
-        return err
+		return err
 	}
 	err := auth.LoginByEmailAndPassword(c, ah.Db.AuthUsers(), m.Email, m.Password)
 	if err != nil {
+		log.Printf("Failed to login: %v", err)
 		return util.TemplRender(c, views.LoginForm(m.Email, m.Password, "Неверный логин или пароль"))
 	}
 	nextPath := c.QueryParam("next")
