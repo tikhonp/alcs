@@ -13,10 +13,10 @@ import (
 )
 
 func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.ModelsFactory, a annalist.Annalist) {
-	ah := handlers.AuthHandler{Db: modelsFactory, Annalist: a}
+	ah := handlers.AuthHandler{Db: modelsFactory, Annalist: a, AuthCfg: cfg.Auth}
 
 	goth.UseProviders(
-		google.New(cfg.Auth.GoogleKey, cfg.Auth.GoogleSecret, fmt.Sprintf("%s/auth/google/callback", cfg.BaseHost)),
+		google.New(cfg.Auth.Google.GoogleKey, cfg.Auth.Google.GoogleSecret, fmt.Sprintf("%s/auth/google/callback", cfg.BaseHost)),
 	)
 
 	g.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -29,13 +29,11 @@ func ConfigureAuthGroup(g *echo.Group, cfg *config.Config, modelsFactory db.Mode
 	g.GET("/login", ah.LoginGet)
 	g.GET("/login/by-password", ah.LoginByEmailAndPassword)
 	g.POST("/login", ah.LoginPost)
-
 	g.GET("/logout", ah.Logout)
-
 	g.GET("/:provider/callback", ah.OAuthCallback)
-
 	g.GET("/logout/:provider", ah.OAuthLogout)
-
 	g.GET("/:provider", ah.OAuthProvider)
+	g.GET("/telegram/callback", ah.TelegramCallback)
 
 }
+

@@ -2,7 +2,7 @@
 package config
 
 type Auth struct {
-	GoogleKey string `pkl:"googleKey"`
+	Google *GoogleAuth `pkl:"google"`
 
-	GoogleSecret string `pkl:"googleSecret"`
+	Telegram *TelegramAuth `pkl:"telegram"`
 }

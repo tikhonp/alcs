@@ -11,7 +11,7 @@ services:
     networks:
       - localnet
     ports:
-      - 9999:9990
+      - 80:9990
     volumes:
       - ./:/src
 

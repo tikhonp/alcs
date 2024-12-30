@@ -4,7 +4,7 @@
 -- AUTH
 CREATE TABLE auth_users (
     id SERIAL PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    email VARCHAR(255) UNIQUE,
     password_hash VARCHAR(255),
     first_name VARCHAR(50),
     last_name VARCHAR(50),

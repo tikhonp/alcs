@@ -52,7 +52,16 @@ templ Navbar(user *db_auth.User) {
 			<div class="navbar-end">
 				if user != nil {
 					<a href="/user" class="navbar-item">
-						{ user.Email }
+						if user.Email.Valid {
+							{ user.Email.String }
+						} else {
+							if user.FirstName.Valid {
+								{ user.FirstName.String }
+							}
+							if user.LastName.Valid {
+								{ user.LastName.String }
+							}
+						}
 					</a>
 				} else {
 					<a href="/auth/login" class="navbar-item">

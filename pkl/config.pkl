@@ -28,9 +28,19 @@ class Database {
 }
 
 // OAuth credentials secrets
-class Auth {
+class GoogleAuth {
     googleKey: String
     googleSecret: String
+}
+
+// OAuth credentials secrets for telegram
+class TelegramAuth {
+    botToken: String
+}
+
+class Auth {
+    google: GoogleAuth
+    telegram: TelegramAuth
 }
 
 server: Server

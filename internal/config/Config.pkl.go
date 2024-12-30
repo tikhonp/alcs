@@ -17,7 +17,7 @@ type Config struct {
 	// Text file must contain release version or commit hash.
 	ReleaseFilePath string `pkl:"releaseFilePath"`
 
-	// Base host like example.com
+	// Base host like http://example.com
 	BaseHost string `pkl:"baseHost"`
 }
 

@@ -16,7 +16,7 @@ import (
 
 type User struct {
 	ID           int            `db:"id"`
-	Email        string         `db:"email"`
+	Email        sql.NullString `db:"email"`
 	PasswordHash sql.NullString `db:"password_hash"`
 	FirstName    sql.NullString `db:"first_name"`
 	LastName     sql.NullString `db:"last_name"`
@@ -58,6 +58,9 @@ type Users interface {
 	// ValidateUserAuth checks if user with given email and password exsits
 	// validates passwords and returns user id otherwise error
 	ValidateUserAuth(email, password string) (*int, error)
+
+	// Find or create user by telegram oauth
+	FindOrCreateTelegramUser(telegramID string, username string, firstName string, lastName string, photoURL string) (*User, error)
 }
 
 type users struct {
@@ -168,6 +171,56 @@ func (u *users) ValidateUserAuth(email, password string) (*int, error) {
 	return &user.ID, nil
 }
 
+// Find a user by their Telegram ID
+func (u *users) FindByTelegramID(telegramID string) (*User, error) {
+	var user User
+	query := `SELECT * FROM auth_users WHERE telegram_id = $1`
+	err := u.db.Get(&user, query, telegramID)
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// Create a new user with Telegram data
+func (u *users) CreateTelegramUser(telegramID string, username string, firstName string, lastName string, photoURL string) (*User, error) {
+	query := `
+		INSERT INTO auth_users (telegram_id, first_name, last_name, is_active, created_at, updated_at)
+		VALUES (:telegram_id, :first_name, :last_name, true, NOW(), NOW())
+		RETURNING *`
+
+	params := map[string]interface{}{
+		"telegram_id": telegramID,
+		"first_name":  firstName,
+		"last_name":   lastName,
+	}
+
+	var user User
+	stmt, err := u.db.PrepareNamed(query)
+	if err != nil {
+		return nil, err
+	}
+	err = stmt.Get(&user, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+}
+
+// Find or create a user with Telegram OAuth data
+func (u *users) FindOrCreateTelegramUser(telegramID string, username string, firstName string, lastName string, photoURL string) (*User, error) {
+	// Try to find an existing user
+	user, err := u.FindByTelegramID(telegramID)
+	if err == nil {
+		// User exists
+		return user, nil
+	}
+
+	// If user doesn't exist, create a new one
+	return u.CreateTelegramUser(telegramID, username, firstName, lastName, photoURL)
+}
+
 func getUserPasswordHash(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -183,3 +236,4 @@ func compareEncodedHashAndPassword(hash, password string) error {
 	}
 	return bcrypt.CompareHashAndPassword(bytes, []byte(password))
 }
+

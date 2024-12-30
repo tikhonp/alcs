@@ -8,4 +8,6 @@ func init() {
 	pkl.RegisterMapping("config#Server", Server{})
 	pkl.RegisterMapping("config#Database", Database{})
 	pkl.RegisterMapping("config#Auth", Auth{})
+	pkl.RegisterMapping("config#GoogleAuth", GoogleAuth{})
+	pkl.RegisterMapping("config#TelegramAuth", TelegramAuth{})
 }
