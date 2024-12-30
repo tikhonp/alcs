@@ -28,6 +28,10 @@ type User struct {
 	UpdatedAt    sql.NullTime   `db:"updated_at"`
 }
 
+func (u *User) FullName() string {
+    return fmt.Sprintf("%s %s", u.FirstName.String, u.LastName.String)
+}
+
 func (u *User) String() string {
 	firstName := "nil"
 	if u.FirstName.Valid {
@@ -61,6 +65,9 @@ type Users interface {
 
 	// Find or create user by telegram oauth
 	FindOrCreateTelegramUser(telegramID string, username string, firstName string, lastName string, photoURL string) (*User, error)
+
+	// GetHostsForOrganization returns all hosts for organization
+	GetHostsForOrganization(organizationID int) ([]User, error)
 }
 
 type users struct {
@@ -221,6 +228,17 @@ func (u *users) FindOrCreateTelegramUser(telegramID string, username string, fir
 	return u.CreateTelegramUser(telegramID, username, firstName, lastName, photoURL)
 }
 
+func (u *users) GetHostsForOrganization(organizationID int) ([]User, error) {
+	var users []User
+	query := `
+    SELECT * FROM auth_users WHERE id IN (
+        SELECT user_id FROM organization_members WHERE organization_id = $1 AND role = 'host'
+    )
+    `
+	err := u.db.Select(&users, query, organizationID)
+	return users, err
+}
+
 func getUserPasswordHash(password string) string {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -236,4 +254,3 @@ func compareEncodedHashAndPassword(hash, password string) error {
 	}
 	return bcrypt.CompareHashAndPassword(bytes, []byte(password))
 }
-

@@ -8,6 +8,7 @@ require (
 	github.com/a-h/templ v0.2.793
 	github.com/apple/pkl-go v0.9.0
 	github.com/go-playground/validator/v10 v10.23.0
+	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
 	github.com/gorilla/sessions v1.4.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/labstack/echo-contrib v0.17.2

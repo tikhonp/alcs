@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 
+	"github.com/tikhonp/alcs/internal/apps/telegram/bot"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
 	"github.com/tikhonp/alcs/internal/router"
@@ -30,9 +31,17 @@ func main() {
 	// Annalist
 	annalistManager := annalist.NewDefaultAnnalist(cfg.Server.Debug)
 
+	// Initialize Telegram bot
+	bot, err := bot.NewBot(cfg.Auth.Telegram.BotToken)
+	if err != nil {
+		log.Fatalf("Failed to initialize Telegram bot: %v", err)
+	}
+	// TODO: Activate it for "GOOD" domain
+	// bot.SetTelegramWebhook(cfg.Auth.Telegram)
+
 	// Start the server
 	r := router.New(cfg)
-	router.RegisterRoutes(r, cfg, modelsFactory, annalistManager)
+	router.RegisterRoutes(r, cfg, modelsFactory, annalistManager, bot)
 	r.Logger.Fatal(router.Start(r, cfg))
 
 }

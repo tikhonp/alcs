@@ -1,0 +1,62 @@
+package views
+
+import "github.com/tikhonp/alcs/internal/db/models/auth"
+
+templ EditUserRoles(orgID int, users []auth.User) {
+	<div id="edit-user-roles">
+		<h1 class="title">Edit User Roles</h1>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>Name</th>
+					<th>Email</th>
+					<th>Phone Number</th>
+					<th>Current Role</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+			<tbody>
+				for _, user := range users {
+					<tr>
+                        <td>{ user.FullName() }</td>
+						<td>{ user.Email.String }</td>
+						<td>{ user.PhoneNumber.String }</td>
+						// <td>{ user.Role }</td>
+						// <td>@editUserForm(user)</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+/*
+templ editUserForm(user auth.User) {
+	<form method="POST" action="/superadmin/organizations/{ orgID }/users/roles/update">
+		<input type="hidden" name="user_id" value="{ user.ID }"/>
+		<select name="role">
+			if user.Role == "User" {
+				<option value="User" selected>User</option>
+			} else {
+				<option value="User">User</option>
+			}
+			if user.Role == "Admin" {
+				<option value="Admin" selected>Admin</option>
+			} else {
+				<option value="Admin">Admin</option>
+			}
+			if user.Role == "Manager" {
+				<option value="Manager" selected>Manager</option>
+			} else {
+				<option value="Manager">Manager</option>
+			}
+			if user.Role == "Security" {
+				<option value="Security" selected>Security</option>
+			} else {
+				<option value="Security">Security</option>
+			}
+		</select>
+		<button type="submit" class="btn btn-primary">Update</button>
+	</form>
+}
+*/

@@ -9,9 +9,12 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/labstack/gommon/log"
 	"github.com/markbates/goth/gothic"
+	accesspass "github.com/tikhonp/alcs/internal/apps/access_pass"
 	"github.com/tikhonp/alcs/internal/apps/auth"
 	mainpage "github.com/tikhonp/alcs/internal/apps/main_page"
 	"github.com/tikhonp/alcs/internal/apps/superadmin"
+	"github.com/tikhonp/alcs/internal/apps/telegram"
+	"github.com/tikhonp/alcs/internal/apps/telegram/bot"
 	"github.com/tikhonp/alcs/internal/apps/user"
 	"github.com/tikhonp/alcs/internal/config"
 	"github.com/tikhonp/alcs/internal/db"
@@ -62,11 +65,13 @@ func New(cfg *config.Config) *echo.Echo {
 	return e
 }
 
-func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory, am annalist.AnnalistManager) {
+func RegisterRoutes(e *echo.Echo, cfg *config.Config, modelsFactory db.ModelsFactory, am annalist.AnnalistManager, bot *bot.Bot) {
 	mainpage.ConfigureMainPageGroup(e.Group(""), cfg, modelsFactory)
 	auth.ConfigureAuthGroup(e.Group("/auth"), cfg, modelsFactory, am.GetAnnalist("AUTH"))
 	superadmin.ConfigureSuperAdminGroup(e.Group("/superadmin"), cfg, modelsFactory, am.GetAnnalist("SUPERADMIN"))
 	user.ConfigureUserGroup(e.Group("/user"), cfg, modelsFactory, am.GetAnnalist("USER"))
+	telegram.ConfigureTelegramPageGroup(e.Group("/telegram"), cfg, modelsFactory, bot)
+    accesspass.ConfigureAccessPassRoutes(e.Group("/access-passes"), cfg, modelsFactory)
 }
 
 func Start(e *echo.Echo, cfg *config.Config) error {

@@ -36,6 +36,7 @@ class GoogleAuth {
 // OAuth credentials secrets for telegram
 class TelegramAuth {
     botToken: String
+    telegramWebhookUrl: String
 }
 
 class Auth {

@@ -1,0 +1,54 @@
+package views
+
+import "github.com/tikhonp/alcs/internal/db/models/auth"
+
+templ AccessPassRequestForm(hosts []auth.User) {
+	<div id="access-pass-request-form">
+		<h1 class="title">Request an Access Pass</h1>
+		<form method="POST" action="/user/access-passes/request" class="form">
+			<!-- Visitor Name -->
+			<div class="form-group">
+				<label for="visitor_name">Visitor Name</label>
+				<input type="text" id="visitor_name" name="visitor_name" placeholder="Enter visitor's name" required/>
+			</div>
+			<!-- Vehicle Number -->
+			<div class="form-group">
+				<label for="vehicle_number">Vehicle Number (optional)</label>
+				<input type="text" id="vehicle_number" name="vehicle_number" placeholder="Enter vehicle number"/>
+			</div>
+			<!-- Purpose -->
+			<div class="form-group">
+				<label for="purpose">Purpose</label>
+				<textarea id="purpose" name="purpose" placeholder="Enter the purpose of your visit" required></textarea>
+			</div>
+			<!-- Valid From -->
+			<div class="form-group">
+				<label for="valid_from">Valid From</label>
+				<input type="date" id="valid_from" name="valid_from" required/>
+			</div>
+			<!-- Valid Until -->
+			<div class="form-group">
+				<label for="valid_until">Valid Until</label>
+				<input type="date" id="valid_until" name="valid_until" required/>
+			</div>
+			<!-- Contact Details -->
+			<div class="form-group">
+				<label for="contact_details">Contact Details (optional)</label>
+				<input type="text" id="contact_details" name="contact_details" placeholder="Enter contact information"/>
+			</div>
+			<!-- Host Dropdown -->
+			<div class="form-group">
+				<label for="host_id">Host</label>
+				<select id="host_id" name="host_id" required>
+					for _, host := range hosts {
+						<option value={ string(host.ID) }>{ host.FullName() }</option>
+					}
+				</select>
+			</div>
+			<!-- Submit Button -->
+			<div class="form-group">
+				<button type="submit" class="btn btn-primary">Request Pass</button>
+			</div>
+		</form>
+	</div>
+}

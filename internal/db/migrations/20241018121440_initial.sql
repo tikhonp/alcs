@@ -43,6 +43,18 @@ CREATE TABLE organizations (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TYPE organization_role AS ENUM ('admin', 'member', 'host');
+
+CREATE TABLE organization_members (
+    user_id INT NOT NULL,
+    organization_id INT NOT NULL,
+    role organization_role DEFAULT 'member' NOT NULL,
+    joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, organization_id),
+    FOREIGN KEY (user_id) REFERENCES auth_users (id) ON DELETE CASCADE,
+    FOREIGN KEY (organization_id) REFERENCES organizations (id) ON DELETE CASCADE
+);
+
 CREATE TABLE security_posts (
     id SERIAL PRIMARY KEY,
     organization_id INT NOT NULL,
@@ -54,22 +66,28 @@ CREATE TABLE security_posts (
     FOREIGN KEY (organization_id) REFERENCES organizations (id) ON DELETE CASCADE
 );
 
+CREATE TYPE access_pass_status AS ENUM ('Pending', 'Approved', 'Rejected');
+
 CREATE TABLE access_passes (
     id SERIAL PRIMARY KEY,
     user_id INT NOT NULL,
     organization_id INT NOT NULL,
     security_post_id INT,
     qr_code TEXT UNIQUE,
+    visitor_name VARCHAR(100),
     vehicle_number VARCHAR(50),
     purpose TEXT,
     valid_from TIMESTAMP NOT NULL,
     valid_until TIMESTAMP NOT NULL,
-    is_active BOOLEAN DEFAULT TRUE,
+    contact_details TEXT,
+    host_id INT NOT NULL, -- ID of the host being visited
+    status access_pass_status DEFAULT 'Pending' NOT NULL, -- Pending, Approved, Rejected
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES auth_users (id) ON DELETE CASCADE,
-    FOREIGN KEY (organization_id) REFERENCES organizations (id) ON DELETE CASCADE,
-    FOREIGN KEY (security_post_id) REFERENCES security_posts (id) ON DELETE SET NULL
+    FOREIGN KEY (user_id) REFERENCES auth_users(id) ON DELETE CASCADE,
+    FOREIGN KEY (organization_id) REFERENCES organizations(id) ON DELETE CASCADE,
+    FOREIGN KEY (host_id) REFERENCES auth_users(id) ON DELETE CASCADE,
+    FOREIGN KEY (security_post_id) REFERENCES security_posts(id) ON DELETE SET NULL
 );
 
 CREATE TABLE access_logs (
@@ -174,4 +192,9 @@ drop table organizations cascade;
 drop table security_posts cascade;
 drop table access_passes cascade;
 drop table access_logs cascade;
+drop table organization_members cascade;
+
+drop type access_pass_status;
+drop type organization_role;
 -- +goose StatementEnd
+

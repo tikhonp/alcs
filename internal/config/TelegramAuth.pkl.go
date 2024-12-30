@@ -3,4 +3,6 @@ package config
 
 type TelegramAuth struct {
 	BotToken string `pkl:"botToken"`
+
+	TelegramWebhookUrl string `pkl:"telegramWebhookUrl"`
 }
